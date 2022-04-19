@@ -1,25 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
-
-function App() {
+import { BrowserRouter } from "react-router-dom"
+import { AppRouter } from "./router/AppRouter"
+function Home() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <BrowserRouter>
+      <AppRouter />
+    </BrowserRouter>
+  )
 }
 
-export default App;
+export default Home
+/* import { useRouter } from "next/router"
+
+export default function CallBack() {
+	const { asPath } = useRouter()
+
+	const urlParams = new URLSearchParams(
+		asPath.substring(asPath.indexOf("#") + 1)
+	)
+	const accessToken = urlParams.get("access_token")
+	fetch("https://api.spotify.com/v1/me/top/tracks", {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: "Bearer " + accessToken,
+		},
+	})
+		.then((res) => res.json())
+		.then((res) => {
+			console.log(res)
+		})
+
+	return <p>Redirecting....</p>
+}
+ */
