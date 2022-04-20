@@ -1,14 +1,17 @@
-export const prelaodImages = (data, cb) => {
-  let images = []
+export const preloadImages = (data, cb) => {
+  let dataLoaded = []
   data.forEach((item) => {
     let img = new Image()
-    img.src = item.images
+    img.src = item.image
+    img.crossOrigin = "anonymous"
     img.onload = () => {
-      images.push(img)
-      console.log(images)
-      if (images.length === data.length) {
-        console.log("se cargaron")
-        cb()
+      dataLoaded.push({
+        name: item.name,
+        image: img,
+        artist: item.artist,
+      })
+      if (dataLoaded.length === data.length) {
+        cb(dataLoaded)
       }
     }
   })

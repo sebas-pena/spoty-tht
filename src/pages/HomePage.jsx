@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { prelaodImages } from "../helper/preloadImages"
+import { preloadImages } from "../helper/preloadImages"
 import { useGetUserTop } from "../hook/useGetUserTop"
 
 export const HomePage = () => {
@@ -10,32 +10,53 @@ export const HomePage = () => {
 
   const token = JSON.parse(sessionStorage.getItem("access_token"))
   const userData = useGetUserTop(token)
+  const [templateBackground, setTemplateBackground] = useState(null)
 
   useEffect(() => {
     if (userData) {
       const templateInfo = userData[type][range]
-      prelaodImages(templateInfo, () => {
-        console.log("se cargaron")
-      })
-      console.log(templateInfo)
       const canvas = document.createElement("canvas")
       const ctx = canvas.getContext("2d")
       canvas.width = 1080
       canvas.height = 1920
-      const background = new Image()
-      background.src = "./templateoriginal.jpg"
-      background.onload = () => {
-        ctx.drawImage(background, 0, 0)
-        setCanvasSrc(
-          canvas
-            .toDataURL("ïmage/png")
-            .replace("image/png", "image/octet-stream")
-        )
+
+      if (!canvasSrc) {
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        ctx.fillStyle = "#fff"
+        const background = new Image()
+        background.src = "./templatepng.png"
+        background.crossOrigin = "anonymous"
+        background.onload = () => {
+          ctx.drawImage(background, 0, 0)
+          setTemplateBackground(background)
+          setCanvasSrc(
+            canvas
+              .toDataURL("image/png")
+              .replace("image/png", "image/octet-stream")
+          )
+        }
       }
+
+      preloadImages(templateInfo, (dataParsed) => {
+        dataParsed.forEach((data, index) => {
+          let x
+          let y = 222
+          let dy = 335
+          index % 2 === 0 ? (x = 54) : (x = 738)
+          y = y + dy * Math.floor(index / 2)
+
+          ctx.drawImage(data.image, x, y)
+          templateBackground && ctx.drawImage(templateBackground, 0, 0)
+          setCanvasSrc(
+            canvas
+              .toDataURL("image/png")
+              .replace("image/png", "image/octet-stream")
+          )
+        })
+      })
     }
   }, [range, type, template, userData])
 
-  console.log(userData)
   return (
     <div className="home-page__ctn">
       <main className="home-page__main">
@@ -59,9 +80,8 @@ export const HomePage = () => {
             <ul>
               <li>
                 <button
-                  value="artists"
                   onClick={() => {
-                    setType("artist")
+                    setType("artists")
                   }}
                 >
                   Artistas
@@ -69,7 +89,6 @@ export const HomePage = () => {
               </li>
               <li>
                 <button
-                  value="tracks"
                   onClick={() => {
                     setType("tracks")
                   }}
@@ -82,29 +101,26 @@ export const HomePage = () => {
             <ul>
               <li>
                 <button
-                  value="short_term"
                   onClick={() => {
-                    setRange("short")
+                    setRange("short_term")
                   }}
                 >
-                  Ultimas 4 semanas
+                  Últimas 4 semanas
                 </button>
               </li>
               <li>
                 <button
-                  value="medium_term"
                   onClick={() => {
-                    setRange("medium")
+                    setRange("medium_term")
                   }}
                 >
-                  Ultimos 6 meses
+                  Últimos 6 meses
                 </button>
               </li>
               <li>
                 <button
-                  value="long_term"
                   onClick={() => {
-                    setRange("long")
+                    setRange("long_term")
                   }}
                 >
                   Todo el Tiempo
@@ -113,9 +129,14 @@ export const HomePage = () => {
             </ul>
           </aside>
           <div className="display ">
-            <img src={canvasSrc} alt="template" />
+            {canvasSrc ? (
+              <img src={canvasSrc} alt="template" />
+            ) : (
+              <div className="loading"></div>
+            )}
+
             <a href={canvasSrc} download="SpotyTHT">
-              DOWNLOAD
+              DESCARGAR
             </a>
           </div>
         </div>
