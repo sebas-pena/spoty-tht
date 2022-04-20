@@ -5,27 +5,26 @@ import { HomePage } from "../pages/HomePage"
 import { LoginPage } from "../pages/LoginPage"
 
 export const AppRouter = () => {
-  const [token, setToken] = useState(null)
-  const location = useLocation()
-  useEffect(() => {
-    setToken(sessionStorage.getItem("access_token"))
-  }, [location])
+	const [token, setToken] = useState(null)
+	const location = useLocation()
+	useEffect(() => {
+		setToken(sessionStorage.getItem("access_token"))
+	}, [location])
 
-  console.log(token)
-  return (
-    <Routes>
-      {token ? (
-        <>
-          <Route path="/" element={<HomePage />} />
-          <Route path="*" element={<Navigate to="/" />} />
-        </>
-      ) : (
-        <>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="*" element={<Navigate to="/login" />} />
-        </>
-      )}
-      <Route path="/callback" element={<CallbackPage />} />
-    </Routes>
-  )
+	return (
+		<Routes>
+			<Route path="/callback" element={<CallbackPage />} />
+			{token ? (
+				<>
+					<Route path="/" element={<HomePage />} />
+					<Route path="*" element={<Navigate to="/" />} />
+				</>
+			) : (
+				<>
+					<Route path="/login" element={<LoginPage />} />
+					<Route path="*" element={<Navigate to="/login" />} />
+				</>
+			)}
+		</Routes>
+	)
 }

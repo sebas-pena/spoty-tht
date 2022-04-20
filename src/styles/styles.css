@@ -1,5 +1,8 @@
 @import "./global.css";
+
+/* PAGES */
 @import "./pages/loginPage.css";
+@import "./pages/homePage.css";
 
-
-
+/* COMPONENTS */
+@import "./components/display.css";

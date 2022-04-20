@@ -1,14 +1,14 @@
 import { BrowserRouter } from "react-router-dom"
 import { AppRouter } from "./router/AppRouter"
-function Home() {
-  return (
-    <BrowserRouter>
-      <AppRouter />
-    </BrowserRouter>
-  )
+function App() {
+	return (
+		<BrowserRouter>
+			<AppRouter />
+		</BrowserRouter>
+	)
 }
 
-export default Home
+export default App
 /* import { useRouter } from "next/router"
 
 export default function CallBack() {
