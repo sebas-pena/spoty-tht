@@ -17,6 +17,19 @@ a {
   padding: 0 ;
 }
 
+ul, li {
+  list-style: none;
+}
+
+button{
+  border: none;
+  cursor: pointer;
+}
+
+button:focus-visible{
+  outline: none;
+}
+
 #root{
     height: 100vh;
     background: linear-gradient(0deg, #09cc8b 0%, #68fb88 100%);
