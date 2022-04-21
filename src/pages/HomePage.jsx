@@ -1,62 +1,47 @@
 import React, { useState, useEffect } from "react"
-import { preloadImages } from "../helper/preloadImages"
-import { useGetUserTop } from "../hook/useGetUserTop"
+import { createImage } from "../helper/createImage"
+import { useLoadImages } from "../hook/useLoadImages"
+import { useUserData } from "../hook/useUserData"
 
 export const HomePage = () => {
   const [canvasSrc, setCanvasSrc] = useState(null)
-  const [template, setTemplate] = useState("tht")
-  const [type, setType] = useState("artists")
-  const [range, setRange] = useState("long_term")
-
+  const [templateConfig, setTemplateConfig] = useState({
+    template: "tht",
+    type: "artists",
+    range: "long_term",
+  })
   const token = JSON.parse(sessionStorage.getItem("access_token"))
-  const userData = useGetUserTop(token)
+  const userData = useUserData(token)
   const [templateBackground, setTemplateBackground] = useState(null)
+  const preloadedImages = useLoadImages(userData)
 
   useEffect(() => {
-    if (userData) {
-      const templateInfo = userData[type][range]
-      console.log(templateInfo)
-      const canvas = document.createElement("canvas")
-      const ctx = canvas.getContext("2d")
-      canvas.width = 1080
-      canvas.height = 1920
-
-      if (!canvasSrc) {
-        ctx.fillRect(0, 0, canvas.width, canvas.height)
-        ctx.fillStyle = "#fff"
-        const background = new Image()
-        background.src = "./templatepng.png"
-        background.crossOrigin = "anonymous"
-        background.onload = () => {
-          ctx.drawImage(background, 0, 0)
-          setTemplateBackground(background)
-          setCanvasSrc(
-            canvas
-              .toDataURL("image/png")
-              .replace("image/png", "image/octet-stream")
-          )
-        }
-      }
-
-      preloadImages(templateInfo, (dataParsed) => {
-        dataParsed.forEach((data, index) => {
-          let x
-          let y = 222
-          let dy = 335
-          index % 2 === 0 ? (x = 54) : (x = 738)
-          y = y + dy * Math.floor(index / 2)
-
-          ctx.drawImage(data.image, x, y)
-          templateBackground && ctx.drawImage(templateBackground, 0, 0)
-          setCanvasSrc(
-            canvas
-              .toDataURL("image/png")
-              .replace("image/png", "image/octet-stream")
-          )
-        })
-      })
+    const background = new Image()
+    background.src = "./templatepng.png"
+    background.crossOrigin = "anonymous"
+    background.onload = () => {
+      setTemplateBackground(background)
+      let imageSrc = createImage(background)
+      setCanvasSrc(imageSrc)
     }
-  }, [range, type, template, userData])
+  }, [])
+
+  useEffect(() => {
+    if (userData && templateConfig && templateBackground) {
+      const { type, range } = templateConfig
+      const imageConfig = {
+        type,
+        range,
+        items: userData[type][range],
+      }
+      let imageSrc = createImage(
+        templateBackground,
+        imageConfig,
+        preloadedImages
+      )
+      setCanvasSrc(imageSrc)
+    }
+  }, [templateConfig, userData, templateBackground, preloadedImages])
 
   return (
     <div className="home-page__ctn">
@@ -70,7 +55,10 @@ export const HomePage = () => {
                 <button
                   value="tht"
                   onClick={() => {
-                    setTemplate("tht")
+                    setTemplateConfig({
+                      ...templateConfig,
+                      template: "tht",
+                    })
                   }}
                 >
                   This or That
@@ -82,7 +70,10 @@ export const HomePage = () => {
               <li>
                 <button
                   onClick={() => {
-                    setType("artists")
+                    setTemplateConfig({
+                      ...templateConfig,
+                      type: "artists",
+                    })
                   }}
                 >
                   Artistas
@@ -91,7 +82,10 @@ export const HomePage = () => {
               <li>
                 <button
                   onClick={() => {
-                    setType("tracks")
+                    setTemplateConfig({
+                      ...templateConfig,
+                      type: "tracks",
+                    })
                   }}
                 >
                   Canciones
@@ -103,7 +97,10 @@ export const HomePage = () => {
               <li>
                 <button
                   onClick={() => {
-                    setRange("short_term")
+                    setTemplateConfig({
+                      ...templateConfig,
+                      range: "short_term",
+                    })
                   }}
                 >
                   Últimas 4 semanas
@@ -112,7 +109,10 @@ export const HomePage = () => {
               <li>
                 <button
                   onClick={() => {
-                    setRange("medium_term")
+                    setTemplateConfig({
+                      ...templateConfig,
+                      range: "medium_term",
+                    })
                   }}
                 >
                   Últimos 6 meses
@@ -121,7 +121,10 @@ export const HomePage = () => {
               <li>
                 <button
                   onClick={() => {
-                    setRange("long_term")
+                    setTemplateConfig({
+                      ...templateConfig,
+                      range: "long_term",
+                    })
                   }}
                 >
                   Todo el Tiempo
@@ -136,7 +139,7 @@ export const HomePage = () => {
               <div className="loading"></div>
             )}
 
-            <a href={canvasSrc} download="SpotyTHT">
+            <a href={canvasSrc} download="SpotyTHT.png">
               DESCARGAR
             </a>
           </div>

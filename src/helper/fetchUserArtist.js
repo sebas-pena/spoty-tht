@@ -13,7 +13,7 @@ export const fetchUserArtist = async (token, range) => {
 	return items.map((artist) => {
 		return {
 			name: artist.name,
-			image: artist.images[1].url,
+			imageUrl: artist.images[1].url,
 		}
 	})
 }

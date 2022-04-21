@@ -2,7 +2,6 @@ import React from "react"
 
 export const LoginPage = () => {
   const spotifyUrl = `https://accounts.spotify.com/authorize?client_id=${process.env.REACT_APP_SPOTIFY_CLIENT_ID}&response_type=token&redirect_uri=${process.env.REACT_APP_SPOTIFY_REDIRECT_URI}&scope=${process.env.REACT_APP_SPOTIFY_SCOPE}`
-  console.log("HomePage")
 
   return (
     <div className="login-page__ctn">

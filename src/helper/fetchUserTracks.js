@@ -13,7 +13,7 @@ export const fetchUserTracks = async (token, range) => {
 	return items.map((tack) => {
 		return {
 			name: tack.name,
-			image: tack.album.images[1].url,
+			imageUrl: tack.album.images[1].url,
 			artist: tack.artists[0].name,
 		}
 	})
