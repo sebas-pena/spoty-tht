@@ -15,6 +15,7 @@ export const HomePage = () => {
   useEffect(() => {
     if (userData) {
       const templateInfo = userData[type][range]
+      console.log(templateInfo)
       const canvas = document.createElement("canvas")
       const ctx = canvas.getContext("2d")
       canvas.width = 1080
