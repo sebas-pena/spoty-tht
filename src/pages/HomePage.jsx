@@ -17,7 +17,7 @@ export const HomePage = () => {
 
   useEffect(() => {
     const background = new Image()
-    background.src = "./templatepng.png"
+    background.src = "./tht_template.png"
     background.crossOrigin = "anonymous"
     background.onload = () => {
       setTemplateBackground(background)

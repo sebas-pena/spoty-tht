@@ -1,6 +1,7 @@
 .home-page__ctn{
     height: 100%;
     display: grid;
+    padding: 10px;
     place-content: center;
     grid-template-columns: minmax(0 ,700px);
 }
@@ -9,8 +10,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 500px;
-    border-radius: 15px;
+    border-radius: 10px;
     background-color: #fff;
     box-shadow: 0 2px 2px 0px #838383;
 
@@ -28,11 +28,10 @@
 .home-page__content{
     flex: 1 0 0 ;
     display: flex;
+    gap: 20px;
     justify-content: space-around;
     width: 100%;
-    padding-top: 10px;
     padding: 10px ;
-    overflow: hidden;
 }
  
 .home-page__aside > h2{
@@ -42,6 +41,7 @@
 }
 
 .home-page__aside > ul{
+    flex: 1 0 0;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -51,8 +51,9 @@
 .home-page__aside > ul > li > button{
     background-color: #33d779;
     border-radius: 5px;
-    height: 27px;
-    width: 200px;
+    padding: 7px 10px;
+    width: 100%;
+    max-width: 200px;
     color: #fff;
     font-weight: 600;
     transition: all 0.2s ease-in-out; 
@@ -71,13 +72,13 @@
 }
 
 .display > img{
-    width: 220px;
-    height: 391px;
+    max-height: calc(100vh - 300px);
 }
 
 .display >  .loading{
-    width: 220px;
-    height: 391px;
+    height: 100vh;
+    max-height: calc(100vh - 300px);
+    aspect-ratio:9/16 ;
     animation: loadingDisplay 1s infinite ease-in-out alternate;
 }
 
@@ -106,4 +107,41 @@
     
     }
     
+}
+
+@media only screen and (max-width : 520px){
+    .home-page__ctn{
+        display: block;
+        padding: 0;
+    }
+    .home-page__main{
+        height: 100%;
+        width: 100%;
+        border-radius: 0;
+    }
+    .home-page__content{
+        flex-direction: column-reverse;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+    .home-page__aside{
+        text-align: center;
+    }
+    .home-page__aside > h2{
+        font-size: 16px;
+    }
+    .home-page__aside > ul{
+        flex-direction: row;
+        justify-content: center;
+        margin-bottom: 5px;
+    }
+
+    .display{
+        flex-grow: 1;
+    }
+    .display > img {
+        max-height: calc(100vh - 300px);
+        width: auto;
+    }
 }
