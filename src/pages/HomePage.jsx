@@ -1,146 +1,150 @@
 import React, { useState, useEffect } from "react"
-import { preloadImages } from "../helper/preloadImages"
-import { useGetUserTop } from "../hook/useGetUserTop"
+import { createImage } from "../helper/createImage"
+import { useLoadImages } from "../hook/useLoadImages"
+import { useUserData } from "../hook/useUserData"
 
 export const HomePage = () => {
-  const [canvasSrc, setCanvasSrc] = useState(null)
-  const [template, setTemplate] = useState("tht")
-  const [type, setType] = useState("artists")
-  const [range, setRange] = useState("long_term")
+	const [canvasSrc, setCanvasSrc] = useState(null)
+	const [templateConfig, setTemplateConfig] = useState({
+		template: "tht",
+		type: "artists",
+		range: "long_term",
+	})
+	const token = JSON.parse(sessionStorage.getItem("access_token"))
+	const userData = useUserData(token)
+	const [templateBackground, setTemplateBackground] = useState(null)
+	const preloadedImages = useLoadImages(userData)
 
-  const token = JSON.parse(sessionStorage.getItem("access_token"))
-  const userData = useGetUserTop(token)
-  const [templateBackground, setTemplateBackground] = useState(null)
+	useEffect(() => {
+		const background = new Image()
+		background.src = "./templatepng.png"
+		background.crossOrigin = "anonymous"
+		background.onload = () => {
+			setTemplateBackground(background)
+			let imageSrc = createImage(background)
+			setCanvasSrc(imageSrc)
+		}
+	}, [])
 
-  useEffect(() => {
-    if (userData) {
-      const templateInfo = userData[type][range]
-      const canvas = document.createElement("canvas")
-      const ctx = canvas.getContext("2d")
-      canvas.width = 1080
-      canvas.height = 1920
+	useEffect(() => {
+		if (userData && templateConfig && templateBackground) {
+			const { type, range } = templateConfig
+			const imageConfig = {
+				type,
+				range,
+				items: userData[type][range],
+			}
+			let imageSrc = createImage(
+				templateBackground,
+				imageConfig,
+				preloadedImages
+			)
+			setCanvasSrc(imageSrc)
+		}
+	}, [templateConfig, userData, templateBackground, preloadedImages])
 
-      if (!canvasSrc) {
-        ctx.fillRect(0, 0, canvas.width, canvas.height)
-        ctx.fillStyle = "#fff"
-        const background = new Image()
-        background.src = "./templatepng.png"
-        background.crossOrigin = "anonymous"
-        background.onload = () => {
-          ctx.drawImage(background, 0, 0)
-          setTemplateBackground(background)
-          setCanvasSrc(
-            canvas
-              .toDataURL("image/png")
-              .replace("image/png", "image/octet-stream")
-          )
-        }
-      }
+	return (
+		<div className="home-page__ctn">
+			<main className="home-page__main">
+				<h1 className="home-page__header">SPOTY-THT</h1>
+				<div className="home-page__content">
+					<aside className="home-page__aside">
+						<h2>Plantilla:</h2>
+						<ul>
+							<li>
+								<button
+									value="tht"
+									onClick={() => {
+										setTemplateConfig({
+											...templateConfig,
+											template: "tht",
+										})
+									}}
+								>
+									This or That
+								</button>
+							</li>
+						</ul>
+						<h2>Basado en:</h2>
+						<ul>
+							<li>
+								<button
+									onClick={() => {
+										setTemplateConfig({
+											...templateConfig,
+											type: "artists",
+										})
+									}}
+								>
+									Artistas
+								</button>
+							</li>
+							<li>
+								<button
+									onClick={() => {
+										setTemplateConfig({
+											...templateConfig,
+											type: "tracks",
+										})
+									}}
+								>
+									Canciones
+								</button>
+							</li>
+						</ul>
+						<h2>Franja de tiempo:</h2>
+						<ul>
+							<li>
+								<button
+									onClick={() => {
+										setTemplateConfig({
+											...templateConfig,
+											range: "short_term",
+										})
+									}}
+								>
+									Últimas 4 semanas
+								</button>
+							</li>
+							<li>
+								<button
+									onClick={() => {
+										setTemplateConfig({
+											...templateConfig,
+											range: "medium_term",
+										})
+									}}
+								>
+									Últimos 6 meses
+								</button>
+							</li>
+							<li>
+								<button
+									onClick={() => {
+										setTemplateConfig({
+											...templateConfig,
+											range: "long_term",
+										})
+									}}
+								>
+									Todo el Tiempo
+								</button>
+							</li>
+						</ul>
+					</aside>
+					<div className="display ">
+						{canvasSrc ? (
+							<img src={canvasSrc} alt="template" />
+						) : (
+							<div className="loading"></div>
+						)}
 
-      preloadImages(templateInfo, (dataParsed) => {
-        dataParsed.forEach((data, index) => {
-          let x
-          let y = 222
-          let dy = 335
-          index % 2 === 0 ? (x = 54) : (x = 738)
-          y = y + dy * Math.floor(index / 2)
-
-          ctx.drawImage(data.image, x, y)
-          templateBackground && ctx.drawImage(templateBackground, 0, 0)
-          setCanvasSrc(
-            canvas
-              .toDataURL("image/png")
-              .replace("image/png", "image/octet-stream")
-          )
-        })
-      })
-    }
-  }, [range, type, template, userData])
-
-  return (
-    <div className="home-page__ctn">
-      <main className="home-page__main">
-        <h1 className="home-page__header">SPOTY-THT</h1>
-        <div className="home-page__content">
-          <aside className="home-page__aside">
-            <h2>Plantilla:</h2>
-            <ul>
-              <li>
-                <button
-                  value="tht"
-                  onClick={() => {
-                    setTemplate("tht")
-                  }}
-                >
-                  This or That
-                </button>
-              </li>
-            </ul>
-            <h2>Basado en:</h2>
-            <ul>
-              <li>
-                <button
-                  onClick={() => {
-                    setType("artists")
-                  }}
-                >
-                  Artistas
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => {
-                    setType("tracks")
-                  }}
-                >
-                  Canciones
-                </button>
-              </li>
-            </ul>
-            <h2>Franja de tiempo:</h2>
-            <ul>
-              <li>
-                <button
-                  onClick={() => {
-                    setRange("short_term")
-                  }}
-                >
-                  Últimas 4 semanas
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => {
-                    setRange("medium_term")
-                  }}
-                >
-                  Últimos 6 meses
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => {
-                    setRange("long_term")
-                  }}
-                >
-                  Todo el Tiempo
-                </button>
-              </li>
-            </ul>
-          </aside>
-          <div className="display ">
-            {canvasSrc ? (
-              <img src={canvasSrc} alt="template" />
-            ) : (
-              <div className="loading"></div>
-            )}
-
-            <a href={canvasSrc} download="SpotyTHT">
-              DESCARGAR
-            </a>
-          </div>
-        </div>
-      </main>
-    </div>
-  )
+						<a href={canvasSrc} download="SpotyTHT.png">
+							DESCARGAR
+						</a>
+					</div>
+				</div>
+			</main>
+		</div>
+	)
 }
